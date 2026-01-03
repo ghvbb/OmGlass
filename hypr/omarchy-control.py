@@ -2,7 +2,7 @@
 """
 Omarchy Settings - Liquid Glass Edition
 A beautiful GTK4/Libadwaita settings manager for Hyprland with Omarchy
-Version 2.3 - Shadow Bug Fixed
+Version 3.2 - Shadow Bug Fixed
 """
 
 import gi
@@ -15,11 +15,6 @@ import subprocess
 from pathlib import Path
 import json
 import os
-
-
-# ============================================================================
-# BACKEND: Config Parser
-# ============================================================================
 
 class OmarchyConfigParser:
     """Parse Omarchy/Hyprland configuration files"""
@@ -39,13 +34,11 @@ class OmarchyConfigParser:
             content = self.looknfeel_path.read_text()
             settings = {}
             
-            # Parse blur settings
             blur_match = re.search(r'blur\s*{([^}]+)}', content, re.DOTALL)
             if blur_match:
                 blur_content = blur_match.group(1)
                 settings['blur_enabled'] = 'enabled = true' in blur_content.lower() or 'enabled=true' in blur_content.lower()
                 
-                # Extract numeric values
                 for key, pattern in [
                     ('blur_size', r'size\s*=\s*(\d+)'),
                     ('blur_passes', r'passes\s*=\s*(\d+)'),
@@ -54,7 +47,6 @@ class OmarchyConfigParser:
                     if match:
                         settings[key] = int(match.group(1))
                 
-                # Extract float values
                 for key, pattern in [
                     ('blur_noise', r'noise\s*=\s*([\d.]+)'),
                     ('blur_contrast', r'contrast\s*=\s*([\d.]+)'),
@@ -66,7 +58,6 @@ class OmarchyConfigParser:
                     if match:
                         settings[key] = float(match.group(1))
                 
-                # Extract boolean
                 xray_match = re.search(r'xray\s*=\s*(true|false)', blur_content)
                 if xray_match:
                     settings['blur_xray'] = xray_match.group(1) == 'true'
@@ -75,12 +66,10 @@ class OmarchyConfigParser:
                 if new_opt_match:
                     settings['blur_new_optimizations'] = new_opt_match.group(1) == 'true'
             
-            # Parse rounding
             rounding_match = re.search(r'rounding\s*=\s*(\d+)', content)
             if rounding_match:
                 settings['rounding'] = int(rounding_match.group(1))
                 
-            # Parse shadow
             shadow_match = re.search(r'shadow\s*{([^}]+)}', content, re.DOTALL)
             if shadow_match:
                 shadow_content = shadow_match.group(1)
@@ -139,38 +128,30 @@ class OmarchyConfigParser:
             if input_match:
                 input_content = input_match.group(1)
                 
-                # Keyboard layout
                 kb_layout_match = re.search(r'kb_layout\s*=\s*([^\n]+)', input_content)
                 if kb_layout_match:
                     layouts = kb_layout_match.group(1).strip()
                     settings['kb_layout'] = layouts
                 
-                # Keyboard options
                 kb_options_match = re.search(r'kb_options\s*=\s*([^\n]+)', input_content)
                 if kb_options_match:
                     settings['kb_options'] = kb_options_match.group(1).strip()
                 
-                # Repeat rate
                 repeat_rate_match = re.search(r'repeat_rate\s*=\s*(\d+)', input_content)
                 if repeat_rate_match:
                     settings['repeat_rate'] = int(repeat_rate_match.group(1))
-                
-                # Repeat delay
                 repeat_delay_match = re.search(r'repeat_delay\s*=\s*(\d+)', input_content)
                 if repeat_delay_match:
                     settings['repeat_delay'] = int(repeat_delay_match.group(1))
                 
-                # Numlock
                 numlock_match = re.search(r'numlock_by_default\s*=\s*(true|false)', input_content)
                 if numlock_match:
                     settings['numlock_by_default'] = numlock_match.group(1) == 'true'
                 
-                # Mouse sensitivity
                 sensitivity_match = re.search(r'sensitivity\s*=\s*([-\d.]+)', input_content)
                 if sensitivity_match:
                     settings['sensitivity'] = float(sensitivity_match.group(1))
                 
-                # Touchpad settings
                 touchpad_match = re.search(r'touchpad\s*{([^}]+)}', input_content, re.DOTALL)
                 if touchpad_match:
                     touchpad_content = touchpad_match.group(1)
@@ -250,9 +231,6 @@ class OmarchyConfigParser:
         }
 
 
-# ============================================================================
-# BACKEND: Config Writer
-# ============================================================================
 
 class OmarchyConfigWriter:
     """Write settings back to Omarchy/Hyprland configuration files"""
@@ -271,7 +249,6 @@ class OmarchyConfigWriter:
         try:
             content = self.looknfeel_path.read_text()
             
-            # Update blur settings within the blur block
             for key, value in settings.items():
                 if key.startswith('blur_'):
                     setting_name = key.replace('blur_', '')
@@ -283,7 +260,6 @@ class OmarchyConfigWriter:
                     else:
                         value_str = str(value)
                     
-                    # Pattern to match setting within blur block
                     pattern = rf'(blur\s*{{[^}}]*?){setting_name}\s*=\s*[^\n]+'
                     replacement = rf'\g<1>{setting_name} = {value_str}'
                     
@@ -340,7 +316,6 @@ class OmarchyConfigWriter:
             content = self.looknfeel_path.read_text()
             
             for key, value in settings.items():
-                # Pattern to match setting within general block
                 pattern = rf'(general\s*{{[^}}]*?){key}\s*=\s*\d+'
                 replacement = rf'\g<1>{key} = {value}'
                 content = re.sub(pattern, replacement, content, flags=re.DOTALL)
@@ -388,9 +363,7 @@ class OmarchyConfigWriter:
                         content
                     )
                 elif key == 'sensitivity':
-                    # Check if sensitivity line exists, if not add it
                     if 'sensitivity' not in content:
-                        # Add after input block opening
                         content = re.sub(
                             r'(input\s*{)',
                             rf'\g<1>\n  sensitivity = {value}',
@@ -431,20 +404,17 @@ class OmarchyConfigWriter:
                 timeout=5
             )
             if result.returncode == 0:
-                print("✅ Hyprland reloaded successfully")
+                print("Omarchy reloaded successfully")
             else:
-                print(f"⚠️ Hyprland reload warning: {result.stderr}")
+                print(f"⚠️ Omarchy reload warning: {result.stderr}")
         except subprocess.TimeoutExpired:
-            print("⚠️ Hyprland reload timed out")
+            print("⚠️ Omarchy reload timed out")
         except FileNotFoundError:
             print("⚠️ hyprctl not found - changes saved but not applied")
         except Exception as e:
-            print(f"⚠️ Could not reload Hyprland: {e}")
+            print(f"⚠️ Could not reload Omarchy: {e}")
 
 
-# ============================================================================
-# UI: Language & Input Settings Page
-# ============================================================================
 
 class LanguageInputPage(Adw.PreferencesPage):
     """Language and input configuration page"""
@@ -492,25 +462,20 @@ class LanguageInputPage(Adw.PreferencesPage):
         self.set_title("Language & Input")
         self.set_icon_name("input-keyboard-symbolic")
         
-        # Load current settings
         self.settings = parser.parse_input_settings()
         
-        # Store selected languages
         current_layout = self.settings.get('kb_layout', 'us,ara')
         self.selected_languages = current_layout.split(',')
         
         self._create_ui()
     
     def _create_ui(self):
-        # Keyboard Layout Group
         layout_group = Adw.PreferencesGroup()
         layout_group.set_title(" Keyboard Layouts")
         layout_group.set_description("Select and configure your keyboard layouts")
         
-        # Language selection
         self._create_language_selector(layout_group)
         
-        # Switch method
         switch_row = Adw.ComboRow()
         switch_row.set_title("Layout Switch Keybind")
         switch_row.set_subtitle("Hotkey to switch between languages")
@@ -531,13 +496,9 @@ class LanguageInputPage(Adw.PreferencesPage):
         layout_group.add(switch_row)
         
         self.add(layout_group)
-        
-        # Mouse & Touchpad Group
         mouse_group = Adw.PreferencesGroup()
         mouse_group.set_title(" Mouse and Touchpad")
         mouse_group.set_description("Configure pointer behavior")
-        
-        # Mouse sensitivity
         sensitivity_row = self._create_scale_row(
             "Mouse Sensitivity",
             "Adjust pointer speed (-1.0 to 1.0)",
@@ -547,8 +508,6 @@ class LanguageInputPage(Adw.PreferencesPage):
             2
         )
         mouse_group.add(sensitivity_row)
-        
-        # Touchpad natural scroll
         natural_scroll = Adw.SwitchRow()
         natural_scroll.set_title("Natural Scrolling")
         natural_scroll.set_subtitle("Reverse scroll direction (macOS style)")
@@ -556,7 +515,6 @@ class LanguageInputPage(Adw.PreferencesPage):
         natural_scroll.connect("notify::active", lambda w, p: self._on_setting_changed('touchpad_natural_scroll', w.get_active()))
         mouse_group.add(natural_scroll)
         
-        # Touchpad scroll factor
         scroll_factor_row = self._create_scale_row(
             "Scroll Speed",
             "Touchpad scrolling speed (0.1 to 2.0)",
@@ -569,11 +527,9 @@ class LanguageInputPage(Adw.PreferencesPage):
         
         self.add(mouse_group)
         
-        # Keyboard Behavior Group
         keyboard_group = Adw.PreferencesGroup()
         keyboard_group.set_title(" Keyboard Behavior")
         
-        # Numlock
         numlock = Adw.SwitchRow()
         numlock.set_title("Numlock on Startup")
         numlock.set_subtitle("Enable numlock by default")
@@ -581,7 +537,6 @@ class LanguageInputPage(Adw.PreferencesPage):
         numlock.connect("notify::active", lambda w, p: self._on_setting_changed('numlock_by_default', w.get_active()))
         keyboard_group.add(numlock)
         
-        # Repeat rate
         repeat_rate = Adw.SpinRow()
         repeat_rate.set_title("Key Repeat Rate")
         repeat_rate.set_subtitle("How fast keys repeat (higher = faster)")
@@ -592,7 +547,6 @@ class LanguageInputPage(Adw.PreferencesPage):
         repeat_rate.connect("changed", lambda w: self._on_setting_changed('repeat_rate', int(w.get_value())))
         keyboard_group.add(repeat_rate)
         
-        # Repeat delay
         repeat_delay = Adw.SpinRow()
         repeat_delay.set_title("Key Repeat Delay")
         repeat_delay.set_subtitle("Delay before key starts repeating (ms)")
@@ -607,19 +561,16 @@ class LanguageInputPage(Adw.PreferencesPage):
     
     def _create_language_selector(self, group):
         """Create language selection UI"""
-        # Current languages display
         current_row = Adw.ActionRow()
         current_row.set_title("Active Layouts")
         current_row.set_subtitle(self._get_languages_display())
         
-        # Add button to open language picker
         pick_button = Gtk.Button(label="Select Languages")
         pick_button.connect("clicked", self._show_language_picker)
         current_row.add_suffix(pick_button)
         
         group.add(current_row)
         
-        # Store reference for updates
         self.current_languages_row = current_row
     
     def _get_languages_display(self):
@@ -637,27 +588,21 @@ class LanguageInputPage(Adw.PreferencesPage):
         dialog.set_modal(True)
         dialog.set_default_size(450, 550)
         
-        # Main box
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         dialog.set_content(main_box)
-        
-        # Header
         header = Adw.HeaderBar()
         header.set_title_widget(Gtk.Label(label="Select Keyboard Layouts"))
         main_box.append(header)
         
-        # Content box
         content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         content_box.set_vexpand(True)
         
-        # Subtitle
         subtitle_label = Gtk.Label(label="Choose up to 4 layouts")
         subtitle_label.add_css_class("dim-label")
         subtitle_label.set_margin_top(10)
         subtitle_label.set_margin_bottom(20)
         content_box.append(subtitle_label)
         
-        # Scrolled window with checkboxes
         scrolled = Gtk.ScrolledWindow()
         scrolled.set_vexpand(True)
         scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
@@ -693,7 +638,6 @@ class LanguageInputPage(Adw.PreferencesPage):
         scrolled.set_child(list_box)
         content_box.append(scrolled)
         
-        # Buttons
         button_box = Gtk.Box(spacing=12)
         button_box.set_margin_top(20)
         button_box.set_margin_bottom(20)
@@ -723,7 +667,7 @@ class LanguageInputPage(Adw.PreferencesPage):
                 new_languages.append(code)
         
         if new_languages:
-            self.selected_languages = new_languages[:4]  # Max 4 layouts
+            self.selected_languages = new_languages[:4]
             self._on_setting_changed('kb_layout', ','.join(self.selected_languages))
             self.current_languages_row.set_subtitle(self._get_languages_display())
         
@@ -762,9 +706,6 @@ class LanguageInputPage(Adw.PreferencesPage):
         print(f"⚙️ Setting changed: {setting_name} = {value}")
 
 
-# ============================================================================
-# UI: Blur Settings Page
-# ============================================================================
 
 class BlurEffectsPage(Adw.PreferencesPage):
     """Blur and glass effects configuration page"""
@@ -776,19 +717,15 @@ class BlurEffectsPage(Adw.PreferencesPage):
         
         self.set_title("Blur & Glass Effects")
         self.set_icon_name("emblem-photos-symbolic")
-        
-        # Load current settings
         self.settings = parser.parse_decoration_settings()
         
         self._create_ui()
     
     def _create_ui(self):
-        # Main Blur Group
         blur_group = Adw.PreferencesGroup()
         blur_group.set_title(" Liquid Glass Blur")
         blur_group.set_description("Create the perfect frosted glass effect")
         
-        # Enable blur
         enable_blur = Adw.SwitchRow()
         enable_blur.set_title("Enable Blur")
         enable_blur.set_subtitle("Master switch for all blur effects")
@@ -796,7 +733,6 @@ class BlurEffectsPage(Adw.PreferencesPage):
         enable_blur.connect("notify::active", lambda w, p: self._on_setting_changed('blur_enabled', w.get_active()))
         blur_group.add(enable_blur)
         
-        # Blur size
         blur_size = Adw.SpinRow()
         blur_size.set_title("Blur Radius")
         blur_size.set_subtitle("Size of the blur effect (1-20)")
@@ -807,7 +743,6 @@ class BlurEffectsPage(Adw.PreferencesPage):
         blur_size.connect("changed", lambda w: self._on_setting_changed('blur_size', int(w.get_value())))
         blur_group.add(blur_size)
         
-        # Blur passes
         blur_passes = Adw.SpinRow()
         blur_passes.set_title("Blur Quality")
         blur_passes.set_subtitle("Higher = smoother (1-8, affects performance)")
@@ -818,7 +753,6 @@ class BlurEffectsPage(Adw.PreferencesPage):
         blur_passes.connect("changed", lambda w: self._on_setting_changed('blur_passes', int(w.get_value())))
         blur_group.add(blur_passes)
         
-        # New optimizations
         optimizations = Adw.SwitchRow()
         optimizations.set_title("Performance Optimizations")
         optimizations.set_subtitle("Enable for better performance (recommended)")
@@ -828,12 +762,10 @@ class BlurEffectsPage(Adw.PreferencesPage):
         
         self.add(blur_group)
         
-        # Advanced Glass Effects
         advanced_group = Adw.PreferencesGroup()
         advanced_group.set_title(" Advanced Glass Properties")
         advanced_group.set_description("Fine-tune the liquid glass appearance")
         
-        # Noise
         noise_row = self._create_scale_row(
             "Glass Texture",
             "Add subtle grain for realism (0.000-0.100)",
@@ -844,7 +776,6 @@ class BlurEffectsPage(Adw.PreferencesPage):
         )
         advanced_group.add(noise_row)
         
-        # Contrast
         contrast_row = self._create_scale_row(
             "Color Contrast",
             "Make colors pop through glass (0.5-2.0)",
@@ -855,7 +786,6 @@ class BlurEffectsPage(Adw.PreferencesPage):
         )
         advanced_group.add(contrast_row)
         
-        # Brightness
         brightness_row = self._create_scale_row(
             "Glass Brightness",
             "Luminosity multiplier (0.5-1.5)",
@@ -866,7 +796,6 @@ class BlurEffectsPage(Adw.PreferencesPage):
         )
         advanced_group.add(brightness_row)
         
-        # Vibrancy (macOS-style)
         vibrancy_row = self._create_scale_row(
             "Vibrancy ",
             "macOS-style color saturation (0.0-1.0)",
@@ -877,7 +806,6 @@ class BlurEffectsPage(Adw.PreferencesPage):
         )
         advanced_group.add(vibrancy_row)
         
-        # Vibrancy darkness
         vib_dark_row = self._create_scale_row(
             "Vibrancy Darkness",
             "Dark tone preservation (0.0-1.0)",
@@ -888,7 +816,6 @@ class BlurEffectsPage(Adw.PreferencesPage):
         )
         advanced_group.add(vib_dark_row)
         
-        # X-Ray mode
         xray = Adw.SwitchRow()
         xray.set_title("X-Ray Transparency")
         xray.set_subtitle("See through blur completely")
@@ -898,10 +825,6 @@ class BlurEffectsPage(Adw.PreferencesPage):
         
         self.add(advanced_group)
         
-        # Shadow Effects - REMOVED to prevent segfault
-        # Shadows are causing the gsk_inset_shadow_node_new2 crash
-        # Users can configure shadows directly in config files if needed
-    
     def _create_scale_row(self, title, subtitle, min_val, max_val, step, value, setting_name, digits):
         """Helper to create a row with a scale widget"""
         row = Adw.ActionRow()
@@ -910,7 +833,7 @@ class BlurEffectsPage(Adw.PreferencesPage):
         
         scale = Gtk.Scale(orientation=Gtk.Orientation.HORIZONTAL)
         scale.set_range(min_val, max_val)
-        scale.set_value(max(min_val, value))  # Ensure value is within range
+        scale.set_value(max(min_val, value))
         scale.set_digits(digits)
         scale.set_hexpand(True)
         scale.set_draw_value(True)
@@ -927,9 +850,6 @@ class BlurEffectsPage(Adw.PreferencesPage):
         print(f"⚙️ Setting changed: {setting_name} = {value}")
 
 
-# ============================================================================
-# UI: Window Appearance Page
-# ============================================================================
 
 class WindowAppearancePage(Adw.PreferencesPage):
     """Window appearance and layout settings page"""
@@ -948,12 +868,10 @@ class WindowAppearancePage(Adw.PreferencesPage):
         self._create_ui()
     
     def _create_ui(self):
-        # Window Borders
         border_group = Adw.PreferencesGroup()
         border_group.set_title(" Window Borders")
         border_group.set_description("Customize window frames")
         
-        # Border size
         border_size = Adw.SpinRow()
         border_size.set_title("Border Thickness")
         border_size.set_subtitle("Width of window borders (0-10 pixels)")
@@ -964,7 +882,6 @@ class WindowAppearancePage(Adw.PreferencesPage):
         border_size.connect("changed", lambda w: self._on_general_setting_changed('border_size', int(w.get_value())))
         border_group.add(border_size)
         
-        # Corner rounding
         rounding = Adw.SpinRow()
         rounding.set_title("Corner Rounding")
         rounding.set_subtitle("Radius of rounded corners (0-40 pixels)")
@@ -977,12 +894,10 @@ class WindowAppearancePage(Adw.PreferencesPage):
         
         self.add(border_group)
         
-        # Window Gaps
         gaps_group = Adw.PreferencesGroup()
         gaps_group.set_title(" Window Spacing")
         gaps_group.set_description("Configure gaps between windows")
         
-        # Inner gaps
         gaps_in = Adw.SpinRow()
         gaps_in.set_title("Inner Gaps")
         gaps_in.set_subtitle("Space between windows (0-30 pixels)")
@@ -993,7 +908,6 @@ class WindowAppearancePage(Adw.PreferencesPage):
         gaps_in.connect("changed", lambda w: self._on_general_setting_changed('gaps_in', int(w.get_value())))
         gaps_group.add(gaps_in)
         
-        # Outer gaps
         gaps_out = Adw.SpinRow()
         gaps_out.set_title("Outer Gaps")
         gaps_out.set_subtitle("Space from screen edges (0-30 pixels)")
@@ -1006,7 +920,6 @@ class WindowAppearancePage(Adw.PreferencesPage):
         
         self.add(gaps_group)
         
-        # Animations
         anim_group = Adw.PreferencesGroup()
         anim_group.set_title(" Animations")
         anim_group.set_description("Window motion effects")
@@ -1032,9 +945,6 @@ class WindowAppearancePage(Adw.PreferencesPage):
         print(f"⚙️ Setting changed: {setting_name} = {value}")
 
 
-# ============================================================================
-# UI: Main Window
-# ============================================================================
 
 class OmarchySettingsWindow(Adw.ApplicationWindow):
     """Main application window with liquid glass UI"""
@@ -1049,28 +959,23 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
         self.set_default_size(1100, 750)
         self.set_title("Omarchy Settings")
         
-        # Apply liquid glass CSS (removed shadow CSS to prevent crash)
+         
         self._apply_liquid_glass_style()
         
-        # Main layout
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.set_content(self.main_box)
         
-        # Header bar
         self._setup_headerbar()
         
-        # Toast overlay for notifications
         self.toast_overlay = Adw.ToastOverlay()
         self.main_box.append(self.toast_overlay)
         
-        # Navigation view
         self._setup_navigation()
         
     def _apply_liquid_glass_style(self):
         """Apply the liquid glass CSS styling - SHADOW REMOVED"""
         css_provider = Gtk.CssProvider()
         css = """
-        /* Liquid Glass Theme - Omarchy Settings */
         
         window {
             background: linear-gradient(135deg, 
@@ -1254,26 +1159,22 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
         """Setup the header bar"""
         header = Adw.HeaderBar()
         
-        # Left side - Menu button
         menu_button = Gtk.MenuButton()
         menu_button.set_icon_name("open-menu-symbolic")
         
-        # Create menu
         menu = Gio.Menu()
-        menu.append("About Omarchy", "app.about")
+        menu.append("About Settings", "app.about")
         menu.append("Quit", "app.quit")
         
         menu_button.set_menu_model(menu)
         header.pack_start(menu_button)
         
-        # Right side - Apply button
-        apply_btn = Gtk.Button(label=" Apply Settings")
+        apply_btn = Gtk.Button(label=" Apply ")
         apply_btn.add_css_class("glass-button")
         apply_btn.add_css_class("suggested-action")
         apply_btn.connect("clicked", self._on_apply_settings)
         header.pack_end(apply_btn)
         
-        # Reload button
         reload_btn = Gtk.Button()
         reload_btn.set_icon_name("view-refresh-symbolic")
         reload_btn.set_tooltip_text("Reload Hyprland")
@@ -1284,21 +1185,17 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
     
     def _setup_navigation(self):
         """Setup the navigation sidebar and content area"""
-        # Use OverlaySplitView
         split_view = Adw.OverlaySplitView()
         split_view.set_sidebar_position(Gtk.PackType.START)
         split_view.set_show_sidebar(True)
         split_view.set_sidebar_width_fraction(0.25)
         
-        # Sidebar
         sidebar = self._create_sidebar()
         split_view.set_sidebar(sidebar)
         
-        # Content area with ViewStack
         self.view_stack = Adw.ViewStack()
         self.view_stack.set_vexpand(True)
         
-        # Add pages
         self._add_pages()
         
         split_view.set_content(self.view_stack)
@@ -1310,7 +1207,6 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
         sidebar_box.set_size_request(300, -1)
         sidebar_box.add_css_class("sidebar")
         
-        # Logo/Title
         title_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         title_box.set_margin_top(28)
         title_box.set_margin_bottom(28)
@@ -1320,11 +1216,11 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
         title = Gtk.Label(label=" Omarchy")
         title.add_css_class("title-1")
         
-        subtitle = Gtk.Label(label="Liquid Glass Settings")
+        subtitle = Gtk.Label(label="GUI App Settings")
         subtitle.add_css_class("dim-label")
         subtitle.add_css_class("caption")
         
-        version = Gtk.Label(label="v2.3")
+        version = Gtk.Label(label="v3.0")
         version.add_css_class("dim-label")
         version.add_css_class("caption")
         
@@ -1334,16 +1230,14 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
         
         sidebar_box.append(title_box)
         
-        # Separator
         separator = Gtk.Separator()
         separator.set_margin_start(20)
         separator.set_margin_end(20)
         sidebar_box.append(separator)
         
-        # Navigation buttons
         nav_items = [
-            (" Language & Input", "language"),
-            (" Blur & Glass", "blur"),
+            (" Language / input", "language"),
+            (" Blur/Glass", "blur"),
             (" Window Appearance", "appearance"),
         ]
         
@@ -1357,17 +1251,14 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
             sidebar_box.append(btn)
             self.nav_buttons[page_name] = btn
         
-        # Set first button as active
         if nav_items:
             self.nav_buttons[nav_items[0][1]].add_css_class("active")
         
-        # Spacer
         spacer = Gtk.Box()
         spacer.set_vexpand(True)
         sidebar_box.append(spacer)
         
-        # Footer info
-        footer = Gtk.Label(label="Made with  for Hyprland")
+        footer = Gtk.Label(label="Made By ghvbb for Omarchy")
         footer.add_css_class("dim-label")
         footer.add_css_class("caption")
         footer.set_margin_bottom(20)
@@ -1379,7 +1270,6 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
         """Switch to a different page and update nav buttons"""
         self.view_stack.set_visible_child_name(page_name)
         
-        # Update active button
         for name, btn in self.nav_buttons.items():
             if name == page_name:
                 btn.add_css_class("active")
@@ -1388,19 +1278,15 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
     
     def _add_pages(self):
         """Add all configuration pages"""
-        # Language & Input page
         self.language_page = LanguageInputPage(self.parser, self.writer)
         self.view_stack.add_titled(
             self.language_page, "language", "Language & Input"
         )
         
-        # Blur & Glass effects
         self.blur_page = BlurEffectsPage(self.parser, self.writer)
         self.view_stack.add_titled(
             self.blur_page, "blur", "Blur & Glass"
         )
-        
-        # Window appearance
         self.appearance_page = WindowAppearancePage(self.parser, self.writer)
         self.view_stack.add_titled(
             self.appearance_page, "appearance", "Window Appearance"
@@ -1412,14 +1298,11 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
         error_messages = []
         
         try:
-            # Apply language/input settings
             if hasattr(self.language_page, 'settings'):
                 if self.writer.update_input_settings(self.language_page.settings):
                     success_count += 1
                 else:
                     error_messages.append("Input settings")
-            
-            # Apply blur settings
             if hasattr(self.blur_page, 'settings'):
                 if self.writer.update_blur_settings(self.blur_page.settings):
                     success_count += 1
@@ -1427,8 +1310,6 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
                     success_count += 1
                 else:
                     error_messages.append("Blur settings")
-            
-            # Apply appearance settings
             if hasattr(self.appearance_page, 'settings'):
                 if self.writer.update_general_settings(self.appearance_page.settings):
                     success_count += 1
@@ -1438,8 +1319,6 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
             if hasattr(self.appearance_page, 'decoration_settings'):
                 if self.writer.update_decoration_settings(self.appearance_page.decoration_settings):
                     success_count += 1
-            
-            # Show result toast
             if error_messages:
                 toast = Adw.Toast(title=f" Applied {success_count} settings, failed: {', '.join(error_messages)}")
                 toast.set_timeout(4)
@@ -1466,7 +1345,7 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
             )
             
             if result.returncode == 0:
-                toast = Adw.Toast(title=" Hyprland reloaded successfully")
+                toast = Adw.Toast(title=" Omarchy reloaded successfully")
             else:
                 toast = Adw.Toast(title=f" Reload warning: {result.stderr[:50]}")
             
@@ -1481,29 +1360,24 @@ class OmarchySettingsWindow(Adw.ApplicationWindow):
     def _show_about(self):
         """Show about dialog"""
         about = Adw.AboutDialog(
-            application_name="Omarchy Settings",
+            application_name="Settings",
             application_icon="preferences-system",
-            developer_name="Omarchy Community",
+            developer_name="Omarchy Comminity developers",
             version="2.3",
-            developers=["Omarchy Team"],
-            copyright="© 2024",
-            license_type=Gtk.License.MIT_X11,
-            comments="Liquid Glass Configuration Manager for Hyprland"
+            developers=["ghvbb on github/ mohamedxa"],
+            copyright="© 2026",
+            comments="Settings App For Omarchy",
+            license_type=Gtk.License.GPL_3_0,
         )
         about.present(self)
 
 
-# ============================================================================
-# Application
-# ============================================================================
 
 class OmarchySettingsApp(Adw.Application):
     """Main application class"""
     
     def __init__(self):
         super().__init__(application_id='com.omarchy.settings')
-        
-        # Add actions
         self.create_action('quit', self.on_quit, ['<primary>q'])
         self.create_action('about', self.on_about)
         
@@ -1529,9 +1403,6 @@ class OmarchySettingsApp(Adw.Application):
             self.set_accels_for_action(f"app.{name}", shortcuts)
 
 
-# ============================================================================
-# Main Entry Point
-# ============================================================================
 
 def main():
     """Main entry point"""
