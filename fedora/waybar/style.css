@@ -1,102 +1,101 @@
-@import "../omarchy/current/theme/waybar.css";
-
-* {
-    border: none;
-    font-family: 'SF Pro Display';
-    font-weight: 800;
-    font-size: 16.3px;
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-
 window#waybar {
- background: transparent;
-  border-radius: 26px;
-
-
+    background: transparent;
 }
 
-#custom-omarchy,
+.modules-center {
+    background: rgba(219, 225, 227, 0.12);
+    border: 1px solid rgba(216, 228, 233, 0.2);
+    border-radius: 100px;
+    padding: 2px 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1), inset 0 0 10px rgba(255, 255, 255, 0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modules-center:hover {
+    background: rgba(219, 225, 227, 0.18);
+    box-shadow: 0 0 25px rgba(167, 199, 203, 0.3);
+    padding: 2px 20px;
+}
+
+#custom-fedora,
 #workspaces,
-#clock,
-#network,
 #bluetooth,
+#network,
 #pulseaudio,
-#language,
-#battery,
-#group-tray-expander {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.25) 100%);
-    background-color: @bg1; 
-    
-    color: @foreground;
-    padding: 2px 18px;
-    margin: 6px 4px;
-    border-radius: 16px; 
-    
-    box-shadow: 
-        inset 0 1px 1px rgba(255, 255, 255, 0.1), 
-        inset 0 -1px 2px rgba(0, 0, 0, 0.4);      
-    
-    border: 1px solid rgba(255, 255, 255, 0.03);
+#clock,
+#custom-update,
+#tray {
+    font-family: "Google Sans Display", "JetBrainsMono Nerd Font", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #dbe1e3;
+    padding: 0 12px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #custom-fedora {
-    color: @color4;
-    font-size: 18px;
-    padding: 0 22px;
+    color: #4285F4;
+    padding-left: 10px;
 }
 
 #workspaces button {
-    color: rgba(255, 255, 255, 0.4);
-    padding: 0 10px;
-    margin: 4px 2px;
-    border-radius: 10px;
+    color: #b0b8ba;
+    padding: 0 8px;
+    margin: 0 2px;
+    border-radius: 12px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #workspaces button.active {
-    background: @foreground;
-    color: @background;
-    min-width: 40px;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+    color: #3a606e;
+    background: rgba(167, 199, 203, 0.15);
+    padding: 0 15px;
+    box-shadow: inset 0 0 8px rgba(52, 168, 83, 0.2);
+}
+
+#workspaces button.urgent {
+    background-color: #ffffff;
+    color: #ffffff;
 }
 
 #workspaces button:hover {
-    color: @foreground;
+    color: #d8e4e9;
     background: rgba(255, 255, 255, 0.1);
 }
 
-#network    { color: @color6; }
-#bluetooth  { color: @color4; }
-#pulseaudio { color: @color3; }
-#battery    { color: @color2; }
-#language   { color: @color5; }
-#clock      { color: @color7; font-weight: 900; }
-#custom-noti { color: @color6; }
-
-#network:hover, 
-#bluetooth:hover, 
-#pulseaudio:hover, 
-#battery:hover, 
-#clock:hover, 
-#custom-fedora:hover {
-    background: @foreground;
-    color: @background;
-    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.2);
+#clock {
+    color: #dbe1e3;
+    border-left: 1px solid rgba(176, 184, 186, 0.3);
+    margin-left: 10px;
+    padding-left: 15px;
 }
 
-tooltip {
-    background: @background;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+#network {
+    color: #4285F4;
 }
 
-tooltip label {
-    color: @foreground;
-    padding: 10px;
+#pulseaudio {
+    color: #FBBC05;
+}
+
+#bluetooth {
+    color: #4285F4;
+}
+
+#custom-update {
+    color: #EA4335;
 }
 
 #tray {
-    margin: 0 8px;
-    padding: 0 10px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
+    padding-right: 10px;
+}
+
+.modules-center > widget:hover {
+    background: rgba(167, 199, 203, 0.2);
+    border-radius: 20px;
+    padding: 0 18px;
+}
+
+#network:hover, #pulseaudio:hover, #bluetooth:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
