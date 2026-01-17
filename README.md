@@ -1,11 +1,11 @@
-# OmGlass OS
+# OmGlass OS 7.0
 
 
 **Elevating Omarchy UI to the Next Level**
 
-OmGlass OS is a pro UI redesign for Omarchy. While the original Omarchy focuses on stability and reliability, OmGlass is built for those who crave aesthetics without compromising performance.
+OmGlass OS is a pro UI redesign for Linux Distros and (Omarhcy) . While the original Distros focuses on stability and reliability, OmGlass is built for those who crave aesthetics without compromising performance.
 
-Developed over 4 weeks of intensive design work, OmGlass introduces the **Liquid Glass Style**—a unique blend of the sleek **macOS Tahoe** aesthetic and the powerful foundations of Omarchy.
+Developed over 6 weeks of intensive design work, OmGlass introduces the **Liquid Glass Style**—a unique blend of the sleek **Glass Style** aesthetic and the powerful foundations of Omarchy.
 
 ---
 
