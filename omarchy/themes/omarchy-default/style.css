@@ -1,0 +1,969 @@
+@import "../../../../../../../.config/omarchy/current/theme/walker.css";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WALKER - OmGlass EDITION
+   glass design
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+
+@keyframes windowOpen {
+  0% {
+    opacity: 0;
+    transform: scale(0.88) translateY(-20px);
+    filter: blur(20px) saturate(0);
+  }
+  40% {
+    opacity: 1;
+    filter: blur(0) saturate(1);
+  }
+  70% {
+    transform: scale(1.02) translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0) saturate(1);
+  }
+}
+
+@keyframes windowClose {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.92) translateY(-15px);
+    filter: blur(10px);
+  }
+}
+
+@keyframes itemReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes itemHover {
+  0% {
+    background: alpha(@foreground, 0);
+  }
+  100% {
+    background: alpha(@foreground, 0.06);
+  }
+}
+
+@keyframes selectPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.015);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes subtleFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes borderGlow {
+  0%, 100% {
+    border-color: alpha(@foreground, 0.1);
+    box-shadow:
+      0 0 0 1px alpha(@foreground, 0.05),
+      0 20px 70px -10px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    border-color: alpha(@foreground, 0.15);
+    box-shadow:
+      0 0 0 1px alpha(@foreground, 0.08),
+      0 25px 80px -10px rgba(0, 0, 0, 0.55);
+  }
+}
+
+@keyframes caretPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes shimmerLine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes iconBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    box-shadow: 0 0 0 0 alpha(@foreground, 0.15);
+  }
+  70% {
+    box-shadow: 0 0 0 6px alpha(@foreground, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 alpha(@foreground, 0);
+  }
+}
+
+@keyframes textFocus {
+  0%, 100% {
+    text-shadow: 0 0 0 alpha(@foreground, 0);
+  }
+  50% {
+    text-shadow: 0 0 20px alpha(@foreground, 0.15);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BASE RESET & DEFAULTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+* {
+  all: unset;
+  font-family:
+    "SF Pro Display",
+    "SF Pro Text",
+    "Inter",
+    "Helvetica Neue",
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: @foreground;
+  -gtk-font-smoothing: antialiased;
+  transition:
+    all 220ms cubic-bezier(0.2, 0, 0, 1),
+    transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 180ms ease,
+    background 160ms ease,
+    box-shadow 250ms ease,
+    border-color 200ms ease;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   WINDOW CONTAINER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+#window {
+  background: transparent;
+  animation: windowOpen 380ms cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+#box {
+  margin: 240px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MAIN GLASS CONTAINER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.box-wrapper {
+  /* Primary glass background with multiple layers */
+  background:
+    /* Top highlight reflection */
+    linear-gradient(
+      180deg,
+      alpha(@foreground, 0.08) 0%,
+      alpha(@foreground, 0.02) 3%,
+      transparent 15%
+    ),
+    /* Subtle edge lighting */
+    linear-gradient(
+      135deg,
+      alpha(@foreground, 0.04) 0%,
+      transparent 40%,
+      transparent 60%,
+      alpha(@foreground, 0.02) 100%
+    ),
+    /* Main glass tint */
+    alpha(@background, 0.72);
+
+  /* Rounded corners - macOS style */
+  border-radius: 14px;
+
+  /* Border for glass edge definition */
+  border: 1px solid alpha(@foreground, 0.12);
+
+  /* Multi-layer shadow for depth */
+  box-shadow:
+    /* Inner top highlight */
+    inset 0 1px 0 alpha(@foreground, 0.08),
+    /* Inner bottom shadow */
+    inset 0 -1px 0 alpha(@background, 0.5),
+    /* Outer glow */
+    0 0 0 1px alpha(@foreground, 0.04),
+    /* Primary shadow */
+    0 24px 80px -12px rgba(0, 0, 0, 0.55),
+    /* Ambient shadow */
+    0 12px 40px -8px rgba(0, 0, 0, 0.35),
+    /* Close shadow */
+    0 4px 16px -4px rgba(0, 0, 0, 0.25);
+
+  /* Size constraints */
+  min-width: 540px;
+  max-width: 600px;
+
+  /* Prevent content overflow */
+  overflow: hidden;
+
+  /* Entry animation */
+  animation:
+    windowOpen 380ms cubic-bezier(0.2, 0, 0, 1) forwards,
+    borderGlow 4s ease-in-out infinite;
+
+  /* Stacking context */
+  position: relative;
+}
+
+/* Top edge glass reflection */
+.box-wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background:
+    linear-gradient(
+      180deg,
+      alpha(@foreground, 0.06) 0%,
+      alpha(@foreground, 0.02) 20%,
+      transparent 100%
+    );
+  border-radius: 14px 14px 0 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Bottom edge subtle gradient */
+.box-wrapper::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background:
+    linear-gradient(
+      0deg,
+      alpha(@background, 0.3) 0%,
+      transparent 100%
+    );
+  border-radius: 0 0 14px 14px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Hover enhancement */
+.box-wrapper:hover {
+  border-color: alpha(@foreground, 0.15);
+  box-shadow:
+    inset 0 1px 0 alpha(@foreground, 0.1),
+    inset 0 -1px 0 alpha(@background, 0.5),
+    0 0 0 1px alpha(@foreground, 0.06),
+    0 28px 90px -12px rgba(0, 0, 0, 0.6),
+    0 14px 45px -8px rgba(0, 0, 0, 0.38),
+    0 6px 20px -4px rgba(0, 0, 0, 0.28);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SEARCH INPUT AREA
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.search-container {
+  padding: 16px 20px;
+  background:
+    linear-gradient(
+      180deg,
+      alpha(@foreground, 0.03) 0%,
+      alpha(@foreground, 0.01) 100%
+    );
+  border-bottom: 1px solid alpha(@foreground, 0.06);
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+/* Top edge highlight */
+.search-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      alpha(@foreground, 0.1),
+      transparent
+    );
+}
+
+/* Bottom shimmer line */
+.search-container::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      alpha(@foreground, 0.08) 25%,
+      alpha(@foreground, 0.12) 50%,
+      alpha(@foreground, 0.08) 75%,
+      transparent 100%
+    );
+  background-size: 200% 100%;
+  animation: gradientShift 6s ease-in-out infinite;
+}
+
+/* Search icon styling */
+.search-icon {
+  color: alpha(@foreground, 0.4);
+  -gtk-icon-size: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  margin-right: 12px;
+  transition: all 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.search-container:focus-within .search-icon {
+  color: alpha(@foreground, 0.8);
+  transform: scale(1.1);
+}
+
+/* Input field */
+.input {
+  color: @foreground;
+  caret-color: @foreground;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: -0.2px;
+  padding: 4px 0;
+  background: transparent;
+  flex: 1;
+}
+
+.input:focus {
+  animation: textFocus 2s ease-in-out infinite;
+}
+
+.input placeholder {
+  color: alpha(@foreground, 0.35);
+  font-weight: 400;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RESULTS LIST CONTAINER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.list {
+  padding: 8px;
+  min-height: 80px;
+  max-height: 380px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   INDIVIDUAL RESULT ITEMS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.item-box {
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin: 2px 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  /* Staggered entry animation */
+  animation: itemReveal 280ms cubic-bezier(0.2, 0, 0, 1) backwards;
+}
+
+/* Stagger delays for list items */
+.item-box:nth-child(1) { animation-delay: 20ms; }
+.item-box:nth-child(2) { animation-delay: 45ms; }
+.item-box:nth-child(3) { animation-delay: 70ms; }
+.item-box:nth-child(4) { animation-delay: 95ms; }
+.item-box:nth-child(5) { animation-delay: 120ms; }
+.item-box:nth-child(6) { animation-delay: 145ms; }
+.item-box:nth-child(7) { animation-delay: 170ms; }
+.item-box:nth-child(8) { animation-delay: 195ms; }
+.item-box:nth-child(9) { animation-delay: 220ms; }
+.item-box:nth-child(10) { animation-delay: 245ms; }
+
+/* Hover highlight overlay */
+.item-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse at 0% 50%,
+      alpha(@foreground, 0.06) 0%,
+      transparent 70%
+    );
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+
+/* Top edge micro-highlight */
+.item-box::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: alpha(@foreground, 0.06);
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+
+/* Hover state */
+.item-box:hover {
+  background: alpha(@foreground, 0.05);
+  border-color: alpha(@foreground, 0.04);
+  transform: translateX(3px);
+}
+
+.item-box:hover::before {
+  opacity: 1;
+}
+
+/* Active/pressed state */
+.item-box:active {
+  background: alpha(@foreground, 0.08);
+  transform: translateX(3px) scale(0.995);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ITEM TEXT STYLING
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.item-text {
+  font-weight: 500;
+  font-size: 13px;
+  color: alpha(@foreground, 0.88);
+  letter-spacing: -0.1px;
+  line-height: 1.3;
+}
+
+.item-box:hover .item-text {
+  color: @foreground;
+}
+
+.item-subtext {
+  color: alpha(@foreground, 0.4);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.1px;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+.item-box:hover .item-subtext {
+  color: alpha(@foreground, 0.55);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SELECTED ITEM STATE
+   ───────────────────────────────────────────────────────────────────────────── */
+
+child:selected .item-box {
+  background:
+    linear-gradient(
+      135deg,
+      alpha(@foreground, 0.1) 0%,
+      alpha(@foreground, 0.06) 100%
+    );
+  border-color: alpha(@foreground, 0.1);
+  margin-left: 8px;
+  margin-right: 0;
+  box-shadow:
+    /* Inner glow */
+    inset 0 1px 0 alpha(@foreground, 0.08),
+    inset 0 -1px 0 alpha(@background, 0.3),
+    /* Outer shadow */
+    0 2px 8px alpha(@background, 0.3),
+    0 4px 16px alpha(@background, 0.2);
+  animation: selectPop 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+child:selected .item-box::before {
+  opacity: 1;
+  background:
+    radial-gradient(
+      ellipse at 0% 50%,
+      alpha(@foreground, 0.1) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 100% 50%,
+      alpha(@foreground, 0.04) 0%,
+      transparent 50%
+    );
+}
+
+child:selected .item-box::after {
+  opacity: 1;
+  left: 5%;
+  right: 5%;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      alpha(@foreground, 0.15),
+      transparent
+    );
+}
+
+child:selected .item-text {
+  color: @foreground;
+  font-weight: 600;
+}
+
+child:selected .item-subtext {
+  color: alpha(@foreground, 0.7);
+}
+
+child:selected .item-image {
+  transform: scale(1.1);
+  filter: brightness(1.15) saturate(1.1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ITEM ICONS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.item-image {
+  -gtk-icon-size: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  margin-right: 14px;
+  opacity: 0.85;
+  transition:
+    transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter 250ms ease,
+    opacity 200ms ease;
+}
+
+.item-box:hover .item-image {
+  opacity: 1;
+  transform: scale(1.06);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   KEYBIND HINTS FOOTER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.keybind-hints {
+  padding: 12px 16px;
+  background:
+    linear-gradient(
+      180deg,
+      alpha(@background, 0.2) 0%,
+      alpha(@background, 0.4) 100%
+    );
+  border-top: 1px solid alpha(@foreground, 0.04);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Top line accent */
+.keybind-hints::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      alpha(@foreground, 0.06),
+      transparent
+    );
+}
+
+.keybind-hints label {
+  color: alpha(@foreground, 0.4);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.keybind-hints:hover label {
+  color: alpha(@foreground, 0.55);
+}
+
+.hint-key {
+  background:
+    linear-gradient(
+      180deg,
+      alpha(@foreground, 0.08) 0%,
+      alpha(@foreground, 0.04) 100%
+    );
+  color: alpha(@foreground, 0.7);
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-family: "SF Mono", "JetBrains Mono", "Fira Code", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  margin-right: 6px;
+  border: 1px solid alpha(@foreground, 0.06);
+  box-shadow:
+    0 1px 2px alpha(@background, 0.3),
+    inset 0 1px 0 alpha(@foreground, 0.04);
+}
+
+.hint-key:hover {
+  background:
+    linear-gradient(
+      180deg,
+      alpha(@foreground, 0.12) 0%,
+      alpha(@foreground, 0.08) 100%
+    );
+  color: alpha(@foreground, 0.9);
+  transform: translateY(-1px);
+  box-shadow:
+    0 2px 4px alpha(@background, 0.4),
+    inset 0 1px 0 alpha(@foreground, 0.06);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SCROLLBAR STYLING
+   ───────────────────────────────────────────────────────────────────────────── */
+
+scrollbar {
+  background: transparent;
+  min-width: 10px;
+  margin: 8px 4px 8px 0;
+  opacity: 0;
+  transition: opacity 350ms ease;
+}
+
+.list:hover scrollbar {
+  opacity: 1;
+}
+
+scrollbar slider {
+  background: alpha(@foreground, 0.18);
+  border-radius: 5px;
+  min-width: 5px;
+  min-height: 35px;
+  border: 1px solid alpha(@foreground, 0.04);
+}
+
+scrollbar slider:hover {
+  background: alpha(@foreground, 0.28);
+  min-width: 6px;
+}
+
+scrollbar slider:active {
+  background: alpha(@foreground, 0.38);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PREFIX BADGES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.prefix {
+  background:
+    linear-gradient(
+      135deg,
+      alpha(@foreground, 0.1) 0%,
+      alpha(@foreground, 0.06) 100%
+    );
+  color: alpha(@foreground, 0.85);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 11px;
+  margin-right: 10px;
+  border: 1px solid alpha(@foreground, 0.08);
+  box-shadow:
+    inset 0 1px 0 alpha(@foreground, 0.06),
+    0 1px 3px alpha(@background, 0.2);
+}
+
+.prefix:hover {
+  background:
+    linear-gradient(
+      135deg,
+      alpha(@foreground, 0.14) 0%,
+      alpha(@foreground, 0.1) 100%
+    );
+  transform: scale(1.05);
+  box-shadow:
+    inset 0 1px 0 alpha(@foreground, 0.08),
+    0 2px 6px alpha(@background, 0.3);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ACTION ICONS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.activatable-icon {
+  color: alpha(@foreground, 0.4);
+  padding: 6px;
+  border-radius: 6px;
+  margin-left: 4px;
+}
+
+.activatable-icon:hover {
+  color: @foreground;
+  background: alpha(@foreground, 0.1);
+  transform: scale(1.15);
+}
+
+.activatable-icon:active {
+  transform: scale(0.95);
+  background: alpha(@foreground, 0.15);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LOADING SPINNER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.spinner {
+  color: alpha(@foreground, 0.5);
+  animation: subtleFloat 1.5s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   EMPTY STATE / NO RESULTS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.no-results {
+  padding: 48px 24px;
+  color: alpha(@foreground, 0.4);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  animation: itemReveal 300ms ease backwards;
+}
+
+.no-results-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  opacity: 0.3;
+  animation: subtleFloat 3s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CATEGORY LABELS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.category-label {
+  color: alpha(@foreground, 0.35);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 12px 18px 6px 18px;
+  margin-top: 4px;
+}
+
+.category-label::after {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 1px;
+  background: alpha(@foreground, 0.15);
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TEXT MATCH HIGHLIGHTING
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.match {
+  color: @foreground;
+  font-weight: 700;
+  background: alpha(@foreground, 0.1);
+  padding: 0 3px;
+  margin: 0 -1px;
+  border-radius: 3px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ACTION ROW
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.action-row {
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin: 2px 4px;
+  display: flex;
+  align-items: center;
+}
+
+.action-row:hover {
+  background: alpha(@foreground, 0.05);
+  transform: translateX(2px);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TOOLTIPS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.tooltip,
+tooltip,
+tooltip.background {
+  background: alpha(@background, 0.92);
+  color: @foreground;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid alpha(@foreground, 0.1);
+  box-shadow:
+    0 4px 16px alpha(@background, 0.5),
+    0 8px 32px alpha(@background, 0.3);
+  animation: itemReveal 150ms ease;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   SEPARATOR LINES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.separator {
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      alpha(@foreground, 0.06) 20%,
+      alpha(@foreground, 0.08) 50%,
+      alpha(@foreground, 0.06) 80%,
+      transparent 100%
+    );
+  min-height: 1px;
+  margin: 8px 20px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ENTRY WIDGET (alternative input styling)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+entry {
+  background: transparent;
+  color: @foreground;
+  caret-color: @foreground;
+  padding: 8px 0;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+entry selection {
+  background: alpha(@foreground, 0.2);
+  color: @foreground;
+}
+
+entry placeholder {
+  color: alpha(@foreground, 0.35);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   LIST BOX / ROWS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+listbox {
+  background: transparent;
+}
+
+listbox row {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+listbox row:hover {
+  background: transparent;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ADDITIONAL UTILITY CLASSES
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.dimmed {
+  opacity: 0.5;
+}
+
+.accent {
+  color: @foreground;
+  font-weight: 600;
+}
+
+.monospace {
+  font-family: "SF Mono", "JetBrains Mono", "Fira Code", monospace;
+}
+
+.small {
+  font-size: 11px;
+}
+
+.muted {
+  color: alpha(@foreground, 0.5);
+}
+
